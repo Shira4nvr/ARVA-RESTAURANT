@@ -1,0 +1,10 @@
+<svg width="240" height="240" viewBox="0 0 240 240" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="240" height="240" rx="40" fill="#000000"/>
+  <path d="M84 64C84 53.5066 92.5066 45 103 45H137C147.493 45 156 53.5066 156 64V132C156 133.656 154.656 135 153 135H87C85.3431 135 84 133.656 84 132V64Z" fill="#ffffff"/>
+  <path d="M120 148C120 158.493 111.493 167 101 167H91C86.5817 167 83 163.418 83 159V151C83 146.582 86.5817 143 91 143H101C111.493 143 120 151.507 120 162V148Z" fill="#ffffff" opacity="0.9"/>
+  <circle cx="104" cy="103" r="8" fill="#000000"/>
+  <circle cx="136" cy="103" r="8" fill="#000000"/>
+  <path d="M112 120C112 125.523 116.477 130 122 130H118C124.627 130 130 124.627 130 118C130 113.582 127.305 110 124 108C124 113.523 119.523 118 114 118H112Z" fill="#000000"/>
+  <path d="M74 180H166" stroke="#ffffff" stroke-width="12" stroke-linecap="round"/>
+  <text x="50%" y="218" text-anchor="middle" font-family="Arial, sans-serif" font-size="32" font-weight="700" fill="#ffffff">arva</text>
+</svg>
