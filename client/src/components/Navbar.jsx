@@ -54,6 +54,12 @@ const Navbar = () => {
 
               {user ? (
                 <>
+                  <Link
+                    to="/my-reservations"
+                    className="px-4 py-2.5 text-gray-700 font-semibold transition-all duration-300 hover:text-primary hover:bg-gray-50 rounded-lg"
+                  >
+                    Mis Reservas
+                  </Link>
                   {user.role === 'admin' && (
                     <Link
                       to="/admin"
@@ -116,6 +122,13 @@ const Navbar = () => {
 
               {user ? (
                 <>
+                  <Link
+                    to="/my-reservations"
+                    className="block px-4 py-3 text-lg font-semibold text-gray-700 rounded-lg hover:bg-gray-100 hover:text-primary transition-all duration-300"
+                    onClick={() => setMobileOpen(false)}
+                  >
+                    Mis Reservas
+                  </Link>
                   {user.role === 'admin' && (
                     <Link
                       to="/admin"

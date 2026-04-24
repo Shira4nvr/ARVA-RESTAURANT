@@ -7,6 +7,7 @@ import Login from './pages/Login';
 import Menu from './pages/Menu';
 import Reservation from './pages/Reservation';
 import AdminDashboard from './pages/AdminDashboard';
+import MyReservations from './pages/MyReservations';
 import Footer from './components/Footer';
 import './index.css';
 
@@ -28,6 +29,10 @@ function AppContent() {
           <Route 
             path="/admin" 
             element={user?.role === 'admin' ? <AdminDashboard /> : <Navigate to="/login" />}
+          />
+          <Route 
+            path="/my-reservations" 
+            element={user ? <MyReservations /> : <Navigate to="/login" />}
           />
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
