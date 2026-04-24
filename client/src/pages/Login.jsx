@@ -18,8 +18,9 @@ const Login = () => {
 
     try {
       const response = await axios.post('http://localhost:5000/api/auth/login', formData);
-      login(response.data.token, response.data.role);
-      navigate(response.data.role === 'admin' ? '/admin' : '/reservation');
+      const role = response.data.user?.role || 'user';
+      login(response.data.token, role);
+      navigate(role === 'admin' ? '/admin' : '/reservation');
     } catch (err) {
       setError(err.response?.data?.error || 'Error de login');
     }

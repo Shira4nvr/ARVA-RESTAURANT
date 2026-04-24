@@ -1,42 +1,44 @@
-require('dotenv').config();
-const express = require('express');
-const mongoose = require('mongoose');
-const cors = require('cors');
-const User = require('./models/User');
+const app = require('./app');
+const environment = require('./config/environment');
+const { connectDatabase } = require('./config/database');
+const createAdminUser = require('./seeds/createAdmin');
+const logger = require('./utils/logger');
 
-const app = express();
+const startServer = async () => {
+  try {
+    // Conectar a la base de datos
+    await connectDatabase();
 
-app.use(cors());
-app.use(express.json({ limit: '10mb' }));
+    // Crear usuario admin
+    await createAdminUser();
 
-mongoose.connect(process.env.MONGODB_URI)
-  .then(() => console.log('✅ MongoDB conectado'))
-  .catch(err => console.error('❌ Error MongoDB:', err));
-  
-
-app.use('/api/auth', require('./routes/auth'));
-app.use('/api/reservations', require('./routes/reservations'));
-
-const createAdmin = async () => {
-  const adminExists = await User.findOne({ email: 'admin@arva.com' });
-  if (!adminExists) {
-    const admin = new User({
-      username: 'admin',
-      email: 'admin@arva.com',
-      password: 'admin123',
-      role: 'admin'
+    // Iniciar servidor
+    const server = app.listen(environment.PORT, () => {
+      logger.info(`🚀 Servidor corriendo en http://localhost:${environment.PORT}`);
+      logger.info(`📡 Entorno: ${environment.NODE_ENV}`);
     });
-    await admin.save();
-    console.log('✅ Admin creado: admin@arva.com / admin123');
+
+    // Manejo de señales para cerrar gracefully
+    process.on('SIGTERM', async () => {
+      logger.warn('⚠️ SIGTERM - Cerrando servidor...');
+      server.close(async () => {
+        logger.info('✅ Servidor cerrado');
+        process.exit(0);
+      });
+    });
+
+    process.on('SIGINT', async () => {
+      logger.warn('⚠️ SIGINT - Cerrando servidor...');
+      server.close(async () => {
+        logger.info('✅ Servidor cerrado');
+        process.exit(0);
+      });
+    });
+
+  } catch (error) {
+    logger.error(`❌ Error al iniciar servidor: ${error.message}`);
+    process.exit(1);
   }
 };
 
-createAdmin();
-app.get('/api', (req, res) => {
-  res.json({ message: 'Arva Restaurant API funcionando ✅' });
-});
-
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
-});
+startServer();

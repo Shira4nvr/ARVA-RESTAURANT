@@ -1,3 +1,6 @@
+// ARCHIVO DEPRECADO - Usar authMiddleware.js en su lugar
+// Este archivo se mantiene por compatibilidad temporal
+
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 
