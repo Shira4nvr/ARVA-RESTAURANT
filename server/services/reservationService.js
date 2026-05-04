@@ -62,6 +62,11 @@ class ReservationService {
     return reservations;
   }
 
+  static async getReservationsByUserId(userId) {
+    const reservations = await Reservation.find({ userId }).sort({ date: -1 });
+    return reservations;
+  }
+
   static async getMetrics() {
     const [total, pending, confirmed, cancelled] = await Promise.all([
       Reservation.countDocuments(),

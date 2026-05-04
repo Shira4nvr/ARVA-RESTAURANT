@@ -30,11 +30,13 @@ const MyReservations = () => {
       }
 
       if (!token) {
-        throw new Error('No hay token de autenticación');
+        navigate('/login');
+        return;
       }
 
-      const response = await axios.get(`${API_URL}/reservations`, {
+      const response = await axios.get(`${API_URL}/reservations/my`, {
         headers: {
+          'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`
         }
       });
@@ -57,6 +59,7 @@ const MyReservations = () => {
 
       const res = await axios.delete(`${API_URL}/reservations/${id}`, {
         headers: {
+          'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`
         }
       });
@@ -88,6 +91,7 @@ const MyReservations = () => {
         { date, time },
         {
           headers: {
+            'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`
           }
         }

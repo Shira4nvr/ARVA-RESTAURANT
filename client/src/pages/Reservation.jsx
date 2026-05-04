@@ -14,6 +14,8 @@ const Reservation = () => {
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
 
+  const token = localStorage.getItem('token');
+
   if (!user) {
     return <Navigate to="/login" />;
   }
@@ -28,7 +30,16 @@ const Reservation = () => {
         throw new Error('REACT_APP_API_URL no está definido');
       }
 
-      await axios.post(`${API_URL}/reservations`, formData);
+      if (!token) {
+        throw new Error('No hay token de autenticación');
+      }
+
+      await axios.post(`${API_URL}/reservations`, formData, {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        }
+      });
       setMessage('success');
       setFormData({ name: '', email: '', phone: '', branch: '', date: new Date(), time: '19:00', guests: 2, specialRequests: '' });
     } catch (error) {

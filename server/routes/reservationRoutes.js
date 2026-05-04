@@ -7,24 +7,31 @@ const router = express.Router();
 
 /**
  * @route   POST /api/reservations
- * @desc    Crear nueva reserva
- * @access  Public
+ * @desc    Crear nueva reserva (usuario autenticado)
+ * @access  Private
  */
-router.post('/', ReservationController.createReservation);
+router.post('/', authMiddleware, ReservationController.createReservation);
+
+/**
+ * @route   GET /api/reservations/my
+ * @desc    Obtener mis reservas (usuario)
+ * @access  Private
+ */
+router.get('/my', authMiddleware, ReservationController.getMyReservations);
 
 /**
  * @route   GET /api/reservations/client/my-reservations
- * @desc    Obtener reservas del cliente autenticado
+ * @desc    (Compat) Obtener mis reservas
  * @access  Private
  */
 router.get('/client/my-reservations', authMiddleware, ReservationController.getClientReservations);
 
 /**
  * @route   GET /api/reservations
- * @desc    Obtener reservas (Admin: todas | User: propias)
- * @access  Private
+ * @desc    Obtener todas las reservas (Admin)
+ * @access  Private/Admin
  */
-router.get('/', authMiddleware, ReservationController.getAllReservations);
+router.get('/', authMiddleware, requireAdmin, ReservationController.getAllReservations);
 
 /**
  * @route   GET /api/reservations/metrics
@@ -63,7 +70,7 @@ router.put('/:id', authMiddleware, ReservationController.updateReservation);
 
 /**
  * @route   DELETE /api/reservations/:id
- * @desc    Eliminar reserva (Admin: cualquiera | User: propia)
+ * @desc    Eliminar/cancelar reserva (Admin: cualquiera | User: propia)
  * @access  Private
  */
 router.delete('/:id', authMiddleware, ReservationController.deleteReservation);

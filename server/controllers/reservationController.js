@@ -7,7 +7,13 @@ const logger = require('../utils/logger');
 class ReservationController {
   static async createReservation(req, res, next) {
     try {
-      const validation = validateReservationInput(req.body);
+      const reservationPayload = {
+        ...req.body,
+        userId: req.user?._id,
+        email: req.user?.email || req.body.email,
+      };
+
+      const validation = validateReservationInput(reservationPayload);
       if (!validation.isValid) {
         return res.status(constants.HTTP_STATUS.BAD_REQUEST).json({
           success: false,
@@ -16,7 +22,7 @@ class ReservationController {
         });
       }
 
-      const reservation = await ReservationService.createReservation(req.body);
+      const reservation = await ReservationService.createReservation(reservationPayload);
       
       logger.info(`✅ Reserva creada: ${reservation._id}`);
 
@@ -33,10 +39,7 @@ class ReservationController {
 
   static async getAllReservations(req, res, next) {
     try {
-      const isAdmin = req.user?.role === constants.USER_ROLE.ADMIN;
-      const reservations = isAdmin
-        ? await ReservationService.getAllReservations()
-        : await ReservationService.getReservationsByEmail(req.user.email);
+      const reservations = await ReservationService.getAllReservations();
       
       res.status(constants.HTTP_STATUS.OK).json({
         success: true,
@@ -45,6 +48,29 @@ class ReservationController {
       });
     } catch (error) {
       logger.error(`Error al obtener reservas: ${error.message}`);
+      next(error);
+    }
+  }
+
+  static async getMyReservations(req, res, next) {
+    try {
+      const userId = req.user?._id;
+
+      const reservationsByUserId = userId
+        ? await ReservationService.getReservationsByUserId(userId)
+        : [];
+
+      const reservations = reservationsByUserId.length
+        ? reservationsByUserId
+        : await ReservationService.getReservationsByEmail(req.user.email);
+
+      res.status(constants.HTTP_STATUS.OK).json({
+        success: true,
+        count: reservations.length,
+        reservations
+      });
+    } catch (error) {
+      logger.error(`Error al obtener reservas del cliente: ${error.message}`);
       next(error);
     }
   }
@@ -68,7 +94,12 @@ class ReservationController {
       const isAdmin = req.user?.role === constants.USER_ROLE.ADMIN;
       const existingReservation = await ReservationService.getReservationById(req.params.id);
 
-      if (!isAdmin && existingReservation.email !== req.user.email) {
+      const isOwnerByUserId =
+        existingReservation.userId &&
+        String(existingReservation.userId) === String(req.user._id);
+      const isOwnerByEmail = existingReservation.email === req.user.email;
+
+      if (!isAdmin && !isOwnerByUserId && !isOwnerByEmail) {
         throw new ApiError(constants.HTTP_STATUS.FORBIDDEN, 'No puedes modificar esta reserva');
       }
 
@@ -99,7 +130,12 @@ class ReservationController {
       const isAdmin = req.user?.role === constants.USER_ROLE.ADMIN;
       const existingReservation = await ReservationService.getReservationById(req.params.id);
 
-      if (!isAdmin && existingReservation.email !== req.user.email) {
+      const isOwnerByUserId =
+        existingReservation.userId &&
+        String(existingReservation.userId) === String(req.user._id);
+      const isOwnerByEmail = existingReservation.email === req.user.email;
+
+      if (!isAdmin && !isOwnerByUserId && !isOwnerByEmail) {
         throw new ApiError(constants.HTTP_STATUS.FORBIDDEN, 'No puedes eliminar esta reserva');
       }
 
@@ -119,7 +155,13 @@ class ReservationController {
 
   static async getClientReservations(req, res, next) {
     try {
-      const reservations = await ReservationService.getReservationsByEmail(req.user.email);
+      const reservationsByUserId = req.user?._id
+        ? await ReservationService.getReservationsByUserId(req.user._id)
+        : [];
+
+      const reservations = reservationsByUserId.length
+        ? reservationsByUserId
+        : await ReservationService.getReservationsByEmail(req.user.email);
       
       res.status(constants.HTTP_STATUS.OK).json({
         success: true,
