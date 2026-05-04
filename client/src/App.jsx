@@ -9,6 +9,7 @@ import Reservation from './pages/Reservation';
 import AdminDashboard from './pages/AdminDashboard';
 import MyReservations from './pages/MyReservations';
 import Footer from './components/Footer';
+import ChatbotWidget from './components/ChatbotWidget';
 import './index.css';
 
 function AppContent() {
@@ -38,6 +39,7 @@ function AppContent() {
         </Routes>
       </main>
       <Footer />
+      <ChatbotWidget />
     </div>
   );
 }

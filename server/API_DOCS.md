@@ -100,7 +100,7 @@ Response (201):
 
 ### Obtener Mis Reservas
 ```bash
-GET /api/reservations/client/my-reservations
+GET /api/reservations/my
 Authorization: Bearer <token>
 
 Response (200):
@@ -121,6 +121,38 @@ Response (200):
   ]
 }
 ```
+
+## 💬 Chat (OpenAI)
+
+### Recomendar platos / menú
+```bash
+POST /api/chat/recommend
+Content-Type: application/json
+
+{
+  "message": "Quiero algo vegano, sin gluten y no muy picante. ¿Qué me recomiendas?"
+}
+
+Response (200):
+{
+  "success": true,
+  "recommendation": "...",
+  "reply": "...",
+  "response": "..."
+}
+```
+
+También acepta `prompt` en lugar de `message`:
+
+```json
+{ "prompt": "Quiero algo vegano..." }
+```
+
+Requiere configurar en el servidor:
+
+- `LLM_PROVIDER` (`openrouter` o `openai`)
+- Si `LLM_PROVIDER=openrouter`: `OPENROUTER_API_KEY` y (opcional) `OPENROUTER_MODEL`
+- Si `LLM_PROVIDER=openai`: `OPENAI_API_KEY` y (opcional) `OPENAI_MODEL` (por defecto: `gpt-4o-mini`)
 
 ### Obtener Todas las Reservas (Admin)
 ```bash

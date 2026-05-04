@@ -36,26 +36,28 @@ const Menu = () => {
         <h1 className="text-5xl font-bold text-center mb-20 bg-gradient-to-r from-primary to-primary-light bg-clip-text text-transparent">
           🍽️ Nuestro Menú
         </h1>
-        
-        <div className="grid md:grid-cols-3 gap-8">
-          {menuItems.map((category, idx) => (
-            <div key={idx} className="card p-8">
-              <h2 className="text-2xl font-bold mb-8 text-primary border-b pb-4">
-                {category.name}
-              </h2>
-              <div className="space-y-6">
-                {category.items.map((item, i) => (
-                  <div key={i} className="flex justify-between items-start group">
-                    <div>
-                      <h3 className="font-bold text-lg group-hover:text-primary transition">{item.name}</h3>
-                      <p className="text-gray-600 text-sm">{item.desc}</p>
+
+        <div className="section-surface">
+          <div className="grid md:grid-cols-3 gap-8">
+            {menuItems.map((category, idx) => (
+              <div key={idx} className="card p-8">
+                <h2 className="text-2xl font-bold mb-8 text-primary border-b pb-4">
+                  {category.name}
+                </h2>
+                <div className="space-y-6">
+                  {category.items.map((item, i) => (
+                    <div key={i} className="flex justify-between items-start group">
+                      <div>
+                        <h3 className="font-bold text-lg group-hover:text-primary transition">{item.name}</h3>
+                        <p className="text-gray-600 text-sm">{item.desc}</p>
+                      </div>
+                      <span className="text-2xl font-bold text-primary ml-4">{item.price}</span>
                     </div>
-                    <span className="text-2xl font-bold text-primary ml-4">{item.price}</span>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </div>
     </div>

@@ -59,7 +59,7 @@ const Reservation = () => {
   return (
     <div className="min-h-screen py-20 bg-gradient-to-br from-primary/5 to-accent/5">
       <div className="container">
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-4xl mx-auto section-surface">
           <div className="text-center mb-12">
             <FaUtensils className="text-6xl text-accent mx-auto mb-4" />
             <h1 className="text-5xl font-bold bg-gradient-to-r from-primary to-primary-light bg-clip-text text-transparent mb-4">

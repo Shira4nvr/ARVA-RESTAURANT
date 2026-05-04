@@ -7,6 +7,7 @@ const logger = require('./utils/logger');
 // Importar rutas
 const authRoutes = require('./routes/auth');
 const reservationRoutes = require('./routes/reservations');
+const chatRoutes = require('./routes/chatRoutes');
 
 const app = express();
 
@@ -44,10 +45,12 @@ app.get('/health', (req, res) => {
 // API Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/reservations', reservationRoutes);
+app.use('/api/chat', chatRoutes);
 
 // Rutas sin prefijo (/api) para compatibilidad con proxies que reescriben /api
 app.use('/auth', authRoutes);
 app.use('/reservations', reservationRoutes);
+app.use('/chat', chatRoutes);
 
 // Ruta raíz
 app.get('/api', (req, res) => {

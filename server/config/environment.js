@@ -8,6 +8,17 @@ module.exports = {
   JWT_EXPIRE: process.env.JWT_EXPIRE || '24h',
   BCRYPT_ROUNDS: 12,
   
+  // LLM Provider
+  LLM_PROVIDER: process.env.LLM_PROVIDER,
+
+  // OpenRouter
+  OPENROUTER_API_KEY: process.env.OPENROUTER_API_KEY,
+  OPENROUTER_MODEL: process.env.OPENROUTER_MODEL,
+
+  // OpenAI
+  OPENAI_API_KEY: process.env.OPENAI_API_KEY,
+  OPENAI_MODEL: process.env.OPENAI_MODEL,
+  
   // Admin credentials for seeding
   ADMIN_EMAIL: 'admin@arva.com',
   ADMIN_USERNAME: 'admin',
