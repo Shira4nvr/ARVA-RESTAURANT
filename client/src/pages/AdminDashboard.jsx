@@ -22,6 +22,8 @@ const AdminDashboard = () => {
   const [editForm, setEditForm] = useState({});
   const [activeTab, setActiveTab] = useState('metrics');
 
+  const token = localStorage.getItem('token');
+
   useEffect(() => {
     fetchData();
   }, []);
@@ -33,9 +35,17 @@ const AdminDashboard = () => {
         throw new Error('REACT_APP_API_URL no está definido');
       }
 
+      if (!token) {
+        throw new Error('No hay token de autenticación');
+      }
+
       const [reservationsRes, metricsRes] = await Promise.all([
-        axios.get(`${API_URL}/reservations`),
-        axios.get(`${API_URL}/reservations/metrics`)
+        axios.get(`${API_URL}/reservations`, {
+          headers: { Authorization: `Bearer ${token}` }
+        }),
+        axios.get(`${API_URL}/reservations/metrics`, {
+          headers: { Authorization: `Bearer ${token}` }
+        })
       ]);
       setReservations(Array.isArray(reservationsRes.data.reservations) ? reservationsRes.data.reservations : []);
       setMetrics(metricsRes.data.metrics || {});
@@ -52,7 +62,13 @@ const AdminDashboard = () => {
           throw new Error('REACT_APP_API_URL no está definido');
         }
 
-        await axios.delete(`${API_URL}/reservations/${id}`);
+        if (!token) {
+          throw new Error('No hay token de autenticación');
+        }
+
+        await axios.delete(`${API_URL}/reservations/${id}`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
         fetchData();
       } catch (error) {
         alert('Error al eliminar');
@@ -66,7 +82,15 @@ const AdminDashboard = () => {
         throw new Error('REACT_APP_API_URL no está definido');
       }
 
-      await axios.put(`${API_URL}/reservations/${id}`, { status: newStatus });
+      if (!token) {
+        throw new Error('No hay token de autenticación');
+      }
+
+      await axios.put(
+        `${API_URL}/reservations/${id}`,
+        { status: newStatus },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
       fetchData();
     } catch (error) {
       alert('Error al actualizar');

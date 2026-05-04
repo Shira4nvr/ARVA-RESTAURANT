@@ -21,10 +21,10 @@ router.get('/client/my-reservations', authMiddleware, ReservationController.getC
 
 /**
  * @route   GET /api/reservations
- * @desc    Obtener todas las reservas (Admin)
- * @access  Private/Admin
+ * @desc    Obtener reservas (Admin: todas | User: propias)
+ * @access  Private
  */
-router.get('/', authMiddleware, requireAdmin, ReservationController.getAllReservations);
+router.get('/', authMiddleware, ReservationController.getAllReservations);
 
 /**
  * @route   GET /api/reservations/metrics
@@ -56,16 +56,16 @@ router.get('/:id', authMiddleware, requireAdmin, ReservationController.getReserv
 
 /**
  * @route   PUT /api/reservations/:id
- * @desc    Actualizar reserva (Admin)
- * @access  Private/Admin
+ * @desc    Actualizar reserva (Admin: cualquiera | User: propia)
+ * @access  Private
  */
-router.put('/:id', authMiddleware, requireAdmin, ReservationController.updateReservation);
+router.put('/:id', authMiddleware, ReservationController.updateReservation);
 
 /**
  * @route   DELETE /api/reservations/:id
- * @desc    Eliminar reserva (Admin)
- * @access  Private/Admin
+ * @desc    Eliminar reserva (Admin: cualquiera | User: propia)
+ * @access  Private
  */
-router.delete('/:id', authMiddleware, requireAdmin, ReservationController.deleteReservation);
+router.delete('/:id', authMiddleware, ReservationController.deleteReservation);
 
 module.exports = router;

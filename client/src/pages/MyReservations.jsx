@@ -12,6 +12,8 @@ const MyReservations = () => {
   const [reservations, setReservations] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  const token = localStorage.getItem('token');
+
   useEffect(() => {
     if (!user) {
       navigate('/login');
@@ -27,9 +29,13 @@ const MyReservations = () => {
         throw new Error('REACT_APP_API_URL no está definido');
       }
 
-      const response = await axios.get(`${API_URL}/reservations/client/my-reservations`, {
+      if (!token) {
+        throw new Error('No hay token de autenticación');
+      }
+
+      const response = await axios.get(`${API_URL}/reservations`, {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`
+          Authorization: `Bearer ${token}`
         }
       });
       setReservations(Array.isArray(response.data.reservations) ? response.data.reservations : []);
@@ -37,6 +43,66 @@ const MyReservations = () => {
       console.error('Error al obtener reservas:', error);
     }
     setLoading(false);
+  };
+
+  const cancelReservation = async (id) => {
+    try {
+      if (!API_URL) {
+        throw new Error('REACT_APP_API_URL no está definido');
+      }
+
+      if (!token) {
+        throw new Error('No hay token de autenticación');
+      }
+
+      const res = await axios.delete(`${API_URL}/reservations/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+
+      if (res.data?.success) {
+        setReservations((prev) => prev.filter((r) => r._id !== id));
+        alert('Reserva cancelada');
+      } else {
+        alert(res.data?.message || 'Error cancelando reserva');
+      }
+    } catch (err) {
+      console.error(err);
+      alert(err.response?.data?.message || 'Error cancelando reserva');
+    }
+  };
+
+  const updateReservation = async (id, date, time) => {
+    try {
+      if (!API_URL) {
+        throw new Error('REACT_APP_API_URL no está definido');
+      }
+
+      if (!token) {
+        throw new Error('No hay token de autenticación');
+      }
+
+      const res = await axios.put(
+        `${API_URL}/reservations/${id}`,
+        { date, time },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      );
+
+      if (res.data?.success) {
+        setReservations((prev) => prev.map((r) => (r._id === id ? res.data.reservation : r)));
+        alert('Reserva actualizada');
+      } else {
+        alert(res.data?.message || 'Error actualizando reserva');
+      }
+    } catch (err) {
+      console.error(err);
+      alert(err.response?.data?.message || 'Error actualizando reserva');
+    }
   };
 
   const getStatusInfo = (status) => {
@@ -179,6 +245,28 @@ const MyReservations = () => {
                            reservation.branch === 'norte' ? 'Norte' :
                            reservation.branch === 'sur' ? 'Sur' : reservation.branch}
                         </p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-start md:justify-end gap-3">
+                      <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+                        <button
+                          onClick={() => cancelReservation(reservation._id)}
+                          className="btn-primary whitespace-nowrap"
+                        >
+                          Cancelar
+                        </button>
+                        <button
+                          onClick={() => {
+                            const currentDate = new Date(reservation.date).toISOString().split('T')[0];
+                            const newDate = window.prompt('Nueva fecha (YYYY-MM-DD):', currentDate);
+                            const newTime = window.prompt('Nueva hora (HH:mm):', reservation.time);
+                            if (newDate && newTime) updateReservation(reservation._id, newDate, newTime);
+                          }}
+                          className="btn-primary whitespace-nowrap"
+                        >
+                          Cambiar fecha/hora
+                        </button>
                       </div>
                     </div>
 

@@ -33,7 +33,10 @@ class ReservationController {
 
   static async getAllReservations(req, res, next) {
     try {
-      const reservations = await ReservationService.getAllReservations();
+      const isAdmin = req.user?.role === constants.USER_ROLE.ADMIN;
+      const reservations = isAdmin
+        ? await ReservationService.getAllReservations()
+        : await ReservationService.getReservationsByEmail(req.user.email);
       
       res.status(constants.HTTP_STATUS.OK).json({
         success: true,
@@ -62,7 +65,21 @@ class ReservationController {
 
   static async updateReservation(req, res, next) {
     try {
-      const reservation = await ReservationService.updateReservation(req.params.id, req.body);
+      const isAdmin = req.user?.role === constants.USER_ROLE.ADMIN;
+      const existingReservation = await ReservationService.getReservationById(req.params.id);
+
+      if (!isAdmin && existingReservation.email !== req.user.email) {
+        throw new ApiError(constants.HTTP_STATUS.FORBIDDEN, 'No puedes modificar esta reserva');
+      }
+
+      const updateData = isAdmin
+        ? req.body
+        : {
+            date: req.body.date,
+            time: req.body.time,
+          };
+
+      const reservation = await ReservationService.updateReservation(req.params.id, updateData);
       
       logger.info(`✅ Reserva actualizada: ${reservation._id}`);
 
@@ -79,6 +96,13 @@ class ReservationController {
 
   static async deleteReservation(req, res, next) {
     try {
+      const isAdmin = req.user?.role === constants.USER_ROLE.ADMIN;
+      const existingReservation = await ReservationService.getReservationById(req.params.id);
+
+      if (!isAdmin && existingReservation.email !== req.user.email) {
+        throw new ApiError(constants.HTTP_STATUS.FORBIDDEN, 'No puedes eliminar esta reserva');
+      }
+
       await ReservationService.deleteReservation(req.params.id);
       
       logger.info(`✅ Reserva eliminada: ${req.params.id}`);
