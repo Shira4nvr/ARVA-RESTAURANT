@@ -9,6 +9,8 @@ import {
   FaClock, FaUserFriends, FaCheckCircle, FaTimesCircle 
 } from 'react-icons/fa';
 
+const API_URL = process.env.REACT_APP_API_URL;
+
 const AdminDashboard = () => {
   const [reservations, setReservations] = useState([]);
   const [metrics, setMetrics] = useState({});
@@ -27,9 +29,13 @@ const AdminDashboard = () => {
   const fetchData = async () => {
     try {
       setLoading(true);
+      if (!API_URL) {
+        throw new Error('REACT_APP_API_URL no está definido');
+      }
+
       const [reservationsRes, metricsRes] = await Promise.all([
-        axios.get('http://localhost:5000/api/reservations'),
-        axios.get('http://localhost:5000/api/reservations/metrics')
+        axios.get(`${API_URL}/reservations`),
+        axios.get(`${API_URL}/reservations/metrics`)
       ]);
       setReservations(Array.isArray(reservationsRes.data.reservations) ? reservationsRes.data.reservations : []);
       setMetrics(metricsRes.data.metrics || {});
@@ -42,7 +48,11 @@ const AdminDashboard = () => {
   const handleDelete = async (id) => {
     if (window.confirm('¿Eliminar esta reserva permanentemente?')) {
       try {
-        await axios.delete(`http://localhost:5000/api/reservations/${id}`);
+        if (!API_URL) {
+          throw new Error('REACT_APP_API_URL no está definido');
+        }
+
+        await axios.delete(`${API_URL}/reservations/${id}`);
         fetchData();
       } catch (error) {
         alert('Error al eliminar');
@@ -52,7 +62,11 @@ const AdminDashboard = () => {
 
   const updateStatus = async (id, newStatus) => {
     try {
-      await axios.put(`http://localhost:5000/api/reservations/${id}`, { status: newStatus });
+      if (!API_URL) {
+        throw new Error('REACT_APP_API_URL no está definido');
+      }
+
+      await axios.put(`${API_URL}/reservations/${id}`, { status: newStatus });
       fetchData();
     } catch (error) {
       alert('Error al actualizar');

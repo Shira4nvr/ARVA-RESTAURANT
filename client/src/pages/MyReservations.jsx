@@ -4,6 +4,8 @@ import { useAuth } from '../hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
 import { FaCalendar, FaClock, FaUsers, FaMapMarkerAlt, FaCheckCircle, FaClock as FaClockIcon, FaTimesCircle, FaArrowLeft } from 'react-icons/fa';
 
+const API_URL = process.env.REACT_APP_API_URL;
+
 const MyReservations = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -21,7 +23,11 @@ const MyReservations = () => {
   const fetchMyReservations = async () => {
     try {
       setLoading(true);
-      const response = await axios.get('http://localhost:5000/api/reservations/client/my-reservations', {
+      if (!API_URL) {
+        throw new Error('REACT_APP_API_URL no está definido');
+      }
+
+      const response = await axios.get(`${API_URL}/reservations/client/my-reservations`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`
         }

@@ -4,6 +4,8 @@ import { FaUtensils, FaUsers, FaMapMarkerAlt } from 'react-icons/fa';
 import { useAuth } from '../hooks/useAuth';
 import { Navigate } from 'react-router-dom';
 
+const API_URL = process.env.REACT_APP_API_URL;
+
 const Reservation = () => {
   const { user } = useAuth();
   const [formData, setFormData] = useState({
@@ -22,7 +24,11 @@ const Reservation = () => {
     setMessage('');
 
     try {
-      await axios.post('http://localhost:5000/api/reservations', formData);
+      if (!API_URL) {
+        throw new Error('REACT_APP_API_URL no está definido');
+      }
+
+      await axios.post(`${API_URL}/reservations`, formData);
       setMessage('success');
       setFormData({ name: '', email: '', phone: '', branch: '', date: new Date(), time: '19:00', guests: 2, specialRequests: '' });
     } catch (error) {

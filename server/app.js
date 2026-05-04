@@ -31,12 +31,35 @@ app.get('/api/health', (req, res) => {
   });
 });
 
+// Health check sin prefijo (/api) para compatibilidad con proxies
+app.get('/health', (req, res) => {
+  res.status(200).json({
+    success: true,
+    message: 'API con salud ✅',
+    environment: environment.NODE_ENV,
+    timestamp: new Date().toISOString()
+  });
+});
+
 // API Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/reservations', reservationRoutes);
 
+// Rutas sin prefijo (/api) para compatibilidad con proxies que reescriben /api
+app.use('/auth', authRoutes);
+app.use('/reservations', reservationRoutes);
+
 // Ruta raíz
 app.get('/api', (req, res) => {
+  res.json({
+    success: true,
+    message: 'Arva Restaurant API funcionando ✅',
+    version: '1.0.0'
+  });
+});
+
+// Ruta raíz sin prefijo (/api)
+app.get('/', (req, res) => {
   res.json({
     success: true,
     message: 'Arva Restaurant API funcionando ✅',

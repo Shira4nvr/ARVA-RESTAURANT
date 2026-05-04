@@ -1,10 +1,16 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import axios from 'axios';
 import { FaUserPlus, FaUser, FaEnvelope, FaLock } from 'react-icons/fa';
 
+const API_URL = process.env.REACT_APP_API_URL;
+
 const Register = () => {
-  const [formData, setFormData] = useState({ username: '', email: '', password: '' });
+  const [formData, setFormData] = useState({
+    username: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
+  });
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -12,10 +18,27 @@ const Register = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      await axios.post('http://localhost:5000/api/auth/register', formData);
+      if (!API_URL) {
+        throw new Error('REACT_APP_API_URL no está definido');
+      }
+
+      const { username, email, password, confirmPassword } = formData;
+
+      const response = await fetch(`${API_URL}/auth/register`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, email, password, confirmPassword }),
+      });
+
+      const data = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        throw new Error(data?.error || data?.message || 'Error');
+      }
+
       navigate('/login');
     } catch (error) {
-      alert(error.response?.data?.error || 'Error');
+      alert(error?.message || 'Error');
     }
     setLoading(false);
   };
@@ -69,6 +92,20 @@ const Register = () => {
               placeholder="••••••••"
               value={formData.password}
               onChange={(e) => setFormData({...formData, password: e.target.value})}
+              className="form-input border-2 border-gray-200 focus:ring-2 focus:ring-accent"
+              required
+            />
+          </div>
+          <div className="form-group">
+            <label className="block text-sm font-bold text-primary mb-2 flex items-center">
+              <FaLock className="mr-2 text-accent" />
+              Confirmar contraseña
+            </label>
+            <input
+              type="password"
+              placeholder="••••••••"
+              value={formData.confirmPassword}
+              onChange={(e) => setFormData({...formData, confirmPassword: e.target.value})}
               className="form-input border-2 border-gray-200 focus:ring-2 focus:ring-accent"
               required
             />
