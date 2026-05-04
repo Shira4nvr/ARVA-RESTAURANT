@@ -4,10 +4,8 @@ import { useAuth } from '../hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
 import { FaCalendar, FaClock, FaUsers, FaMapMarkerAlt, FaCheckCircle, FaClock as FaClockIcon, FaTimesCircle, FaArrowLeft } from 'react-icons/fa';
 
-const API_URL = process.env.REACT_APP_API_URL;
-
 const MyReservations = () => {
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const [reservations, setReservations] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -15,17 +13,20 @@ const MyReservations = () => {
   const token = localStorage.getItem('token');
 
   useEffect(() => {
+    if (authLoading) return;
+
     if (!user) {
       navigate('/login');
       return;
     }
+
     fetchMyReservations();
-  }, [user, navigate]);
+  }, [user, authLoading, navigate]);
 
   const fetchMyReservations = async () => {
     try {
       setLoading(true);
-      if (!API_URL) {
+      if (!process.env.REACT_APP_API_URL) {
         throw new Error('REACT_APP_API_URL no está definido');
       }
 
@@ -34,7 +35,7 @@ const MyReservations = () => {
         return;
       }
 
-      const response = await axios.get(`${API_URL}/reservations/my`, {
+      const response = await axios.get(`${process.env.REACT_APP_API_URL}/reservations/my`, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`
@@ -49,7 +50,7 @@ const MyReservations = () => {
 
   const cancelReservation = async (id) => {
     try {
-      if (!API_URL) {
+      if (!process.env.REACT_APP_API_URL) {
         throw new Error('REACT_APP_API_URL no está definido');
       }
 
@@ -57,7 +58,7 @@ const MyReservations = () => {
         throw new Error('No hay token de autenticación');
       }
 
-      const res = await axios.delete(`${API_URL}/reservations/${id}`, {
+      const res = await axios.delete(`${process.env.REACT_APP_API_URL}/reservations/${id}`, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`
@@ -78,7 +79,7 @@ const MyReservations = () => {
 
   const updateReservation = async (id, date, time) => {
     try {
-      if (!API_URL) {
+      if (!process.env.REACT_APP_API_URL) {
         throw new Error('REACT_APP_API_URL no está definido');
       }
 
@@ -87,7 +88,7 @@ const MyReservations = () => {
       }
 
       const res = await axios.put(
-        `${API_URL}/reservations/${id}`,
+        `${process.env.REACT_APP_API_URL}/reservations/${id}`,
         { date, time },
         {
           headers: {

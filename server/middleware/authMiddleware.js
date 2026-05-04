@@ -27,6 +27,8 @@ const authMiddleware = async (req, res, next) => {
     }
 
     req.user = user;
+    // Normaliza para que siempre exista req.user.id (string) además de _id
+    req.user.id = String(user._id);
     next();
   } catch (error) {
     logger.error(`Error de autenticación: ${error.message}`);

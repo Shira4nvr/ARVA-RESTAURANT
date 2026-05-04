@@ -67,6 +67,16 @@ class ReservationService {
     return reservations;
   }
 
+  static async getReservationsForUser({ userId, email }) {
+    const or = [];
+    if (userId) or.push({ userId });
+    if (email) or.push({ email });
+
+    const query = or.length > 1 ? { $or: or } : (or[0] || {});
+    const reservations = await Reservation.find(query).sort({ date: -1 });
+    return reservations;
+  }
+
   static async getMetrics() {
     const [total, pending, confirmed, cancelled] = await Promise.all([
       Reservation.countDocuments(),

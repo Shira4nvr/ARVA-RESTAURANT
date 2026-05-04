@@ -54,15 +54,10 @@ class ReservationController {
 
   static async getMyReservations(req, res, next) {
     try {
-      const userId = req.user?._id;
-
-      const reservationsByUserId = userId
-        ? await ReservationService.getReservationsByUserId(userId)
-        : [];
-
-      const reservations = reservationsByUserId.length
-        ? reservationsByUserId
-        : await ReservationService.getReservationsByEmail(req.user.email);
+      const reservations = await ReservationService.getReservationsForUser({
+        userId: req.user?._id,
+        email: req.user?.email,
+      });
 
       res.status(constants.HTTP_STATUS.OK).json({
         success: true,
@@ -155,13 +150,10 @@ class ReservationController {
 
   static async getClientReservations(req, res, next) {
     try {
-      const reservationsByUserId = req.user?._id
-        ? await ReservationService.getReservationsByUserId(req.user._id)
-        : [];
-
-      const reservations = reservationsByUserId.length
-        ? reservationsByUserId
-        : await ReservationService.getReservationsByEmail(req.user.email);
+      const reservations = await ReservationService.getReservationsForUser({
+        userId: req.user?._id,
+        email: req.user?.email,
+      });
       
       res.status(constants.HTTP_STATUS.OK).json({
         success: true,

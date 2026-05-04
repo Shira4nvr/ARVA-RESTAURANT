@@ -4,8 +4,6 @@ import axios from 'axios';
 import { useAuth } from '../hooks/useAuth';
 import { FaLock, FaUser } from 'react-icons/fa';
 
-const API_URL = process.env.REACT_APP_API_URL;
-
 const Login = () => {
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [loading, setLoading] = useState(false);
@@ -19,11 +17,11 @@ const Login = () => {
     setError('');
 
     try {
-      if (!API_URL) {
+      if (!process.env.REACT_APP_API_URL) {
         throw new Error('REACT_APP_API_URL no está definido');
       }
 
-      const response = await axios.post(`${API_URL}/auth/login`, formData);
+      const response = await axios.post(`${process.env.REACT_APP_API_URL}/auth/login`, formData);
       const role = response.data.user?.role || 'user';
       login(response.data.token, role);
       navigate(role === 'admin' ? '/admin' : '/reservation');
